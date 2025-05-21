@@ -2,6 +2,9 @@
 const express = require("express");
 const router = express.Router();
 
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
 // maybe we need bcrypt and JWT?
 const bcrypt = require("bcrypt");
 // if we're doing roles we should define them
@@ -11,13 +14,30 @@ const VALID_ROLES = ["admin", "customer", "guest"];
 // GET all users here
 router.get("/", async (req, res) => {
   try {
-    const result = await db.query("SELECT * FROM users");
-    res.json(result.rows);
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        mailingAddress: true,
+        billingInfo: true,
+      },
+    });
+    res.json(users);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch users" });
   }
 });
+
+/*db.query("SELECT * FROM users");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+});*/
 
 // GET users by ID
 router.get("/:id", async (req, res) => {
