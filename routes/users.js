@@ -9,11 +9,12 @@ const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
 // if we're doing roles we should define them
 const authenticateToken = require("../middleware/auth");
+const authorizeRoles = require("../middleware/authorized");
 
 const VALID_ROLES = ["admin", "customer", "guest"];
 
 // GET all users here
-router.get("/", async (req, res) => {
+router.get("/", authorizeRoles("admin"), async (req, res) => {
   try {
     const users = await prisma.user.findMany({
       // only fetches "safe" fields so no password but everything else
@@ -110,26 +111,31 @@ router.post("/", async (req, res) => {
 // need to figure out how to update only one section without altering the other sections
 
 // DELETE user
-router.delete("/:id", authenticateToken, async (req, res) => {
-  const userId = parseInt(req.params.id);
+router.delete(
+  "/:id",
+  authenticateToken,
+  authorizeRoles("admin"),
+  async (req, res) => {
+    const userId = parseInt(req.params.id);
 
-  if (req.user.id !== userId && req.user.role !== "admin") {
-    return res.status(403).json({ error: "Forbidden" });
-  }
-
-  try {
-    const deleted = await prisma.user.delete({
-      where: { id: userId },
-    });
-
-    res.json({ message: `User ${userId} deleted` });
-  } catch (err) {
-    if (err.code === "P2025") {
-      return res.status(404).json({ error: "User not found" });
+    if (req.user.id !== userId && req.user.role !== "admin") {
+      return res.status(403).json({ error: "Forbidden" });
     }
-    console.error(err);
-    res.status(500).json({ error: "Failed to delete user" });
+
+    try {
+      const deleted = await prisma.user.delete({
+        where: { id: userId },
+      });
+
+      res.json({ message: `User ${userId} deleted` });
+    } catch (err) {
+      if (err.code === "P2025") {
+        return res.status(404).json({ error: "User not found" });
+      }
+      console.error(err);
+      res.status(500).json({ error: "Failed to delete user" });
+    }
   }
-});
+);
 
 module.exports = router;
