@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
 // if we're doing roles we should define them
 const authenticateToken = require("../middleware/auth");
-const authorizeRoles = require("../middleware/authorized");
+const authorizeRoles = require("../middleware/authorize");
 
 const VALID_ROLES = ["admin", "customer", "guest"];
 
