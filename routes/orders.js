@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
+const authenticateToken = require("../middleware/auth");
+
 const prisma = new PrismaClient();
 
 // do we even need a GET all orders? I feel like that would be something only the admin can do but functionally it would mean getting ALL orders from EVERYONE so
