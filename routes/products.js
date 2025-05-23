@@ -6,6 +6,11 @@ const authenticateToken = require("../middleware/auth");
 
 const prisma = new PrismaClient();
 
+router.get("/", (req, res) => {
+  res.send("Testing Products");
+});
+
+
 // GET all products here
 router.get("/", async (req, res) => {
   try {

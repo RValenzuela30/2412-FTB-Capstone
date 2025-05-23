@@ -12,6 +12,11 @@ const authenticateToken = require("../middleware/auth");
 
 const VALID_ROLES = ["admin", "customer", "guest"];
 
+router.get("/", (req, res) => {
+  res.send("Testing Users");
+});
+
+
 // GET all users here
 router.get("/", async (req, res) => {
   try {

@@ -10,6 +10,11 @@ const prisma = new PrismaClient();
 
 // --> GET ALL orders
 
+router.get("/", (req, res) => {
+  res.send("Testing Orders");
+});
+
+
 // GET orders for logged-in user
 router.get("/my-orders", authenticateToken, async (req, res) => {
   try {
