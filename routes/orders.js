@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
 const authenticateToken = require("../middleware/auth");
+const authorizeRoles = require("../middleware/authorized");
 
 const prisma = new PrismaClient();
 
@@ -16,19 +17,24 @@ router.get("/", (req, res) => {
 
 
 // GET orders for logged-in user
-router.get("/my-orders", authenticateToken, async (req, res) => {
-  try {
-    const orders = await prisma.order.findMany({
-      // fetch all orders from the db and return as a json
-      where: { userId: req.user.id },
-      include: { orderItems: true },
-    });
-    res.json(orders);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch your orders" });
+router.get(
+  "/my-orders",
+  authenticateToken,
+  authorizeRoles("customer", "admin"),
+  async (req, res) => {
+    try {
+      const orders = await prisma.order.findMany({
+        // fetch all orders from the db and return as a json
+        where: { userId: req.user.id },
+        include: { orderItems: true },
+      });
+      res.json(orders);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to fetch your orders" });
+    }
   }
-});
+);
 
 // GET order by ID (customer or admin only)
 router.get("/:id", authenticateToken, async (req, res) => {
@@ -58,34 +64,39 @@ router.get("/:id", authenticateToken, async (req, res) => {
 
 // POST create an order when the user submits
 // CREATE order
-router.post("/", authenticateToken, async (req, res) => {
-  // authentication token again
-  const { orderItems, orderCost } = req.body;
+router.post(
+  "/",
+  authenticateToken,
+  authorizeRoles("customer"),
+  async (req, res) => {
+    // authentication token again
+    const { orderItems, orderCost } = req.body;
 
-  const orderNumber = `ORD-${Math.floor(1000 + Math.random() * 9000)}`; // looked this up it will give a random order number to any specific order.
+    const orderNumber = `ORD-${Math.floor(1000 + Math.random() * 9000)}`; // looked this up it will give a random order number to any specific order.
 
-  try {
-    const newOrder = await prisma.order.create({
-      data: {
-        orderNumber,
-        orderCost,
-        user: { connect: { id: req.user.id } }, //connect this to the logged-in user
-        orderItems: {
-          // array of objects from client
-          create: orderItems.map((item) => ({
-            product: { connect: { id: item.productId } },
-            quantity: item.quantity,
-          })),
+    try {
+      const newOrder = await prisma.order.create({
+        data: {
+          orderNumber,
+          orderCost,
+          user: { connect: { id: req.user.id } }, //connect this to the logged-in user
+          orderItems: {
+            // array of objects from client
+            create: orderItems.map((item) => ({
+              product: { connect: { id: item.productId } },
+              quantity: item.quantity,
+            })),
+          },
         },
-      },
-      include: { orderItems: true }, // Adds child records to OrderItem table, connecting to Product
-    });
+        include: { orderItems: true }, // Adds child records to OrderItem table, connecting to Product
+      });
 
-    res.status(201).json(newOrder);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to create order" });
+      res.status(201).json(newOrder);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to create order" });
+    }
   }
-});
+);
 
 module.exports = router;
