@@ -15,6 +15,7 @@ const VALID_ROLES = ["admin", "customer", "guest"];
 router.get("/", async (req, res) => {
   try {
     const users = await prisma.user.findMany({
+      // only fetches "safe" fields so no password but everything else
       select: {
         id: true,
         name: true,
@@ -31,24 +32,26 @@ router.get("/", async (req, res) => {
   }
 });
 
-/*db.query("SELECT * FROM users");
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch users" });
-  }
-});*/
-
 // GET users by ID
 router.get("/:id", async (req, res) => {
+  //Parses the ID from the URL
+  // Authenticates the request
   try {
-    const result = await db.query("SELECT * FROM users WHERE id = $1", [
-      req.params.id,
-    ]);
-    if (result.rows.length === 0) {
+    const user = await prisma.user.findUnique({
+      //Uses Prisma’s findUnique to get one user
+      where: { id: userId },
+      include: {
+        orders:
+          req.user.id === userId || req.user.role === "admin" ? true : false,
+      }, //Only includes orders if: The logged-in user is the same as the one being requested, or they are an admin
+    });
+
+    if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    res.json(result.rows[0]);
+
+    const { password, ...safeUser } = user; //Excludes password from the response
+    res.json(safeUser);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch user" });
@@ -62,35 +65,40 @@ router.post("/", async (req, res) => {
     name,
     email,
     password,
-    role = "customer",
-    mailing_address,
-    billing_info,
-    previous_orders = [],
+    role = "customer", // makes sure its a valid role
+    mailingAddress,
+    billingInfo,
   } = req.body;
 
   if (!VALID_ROLES.includes(role)) {
     return res.status(400).json({
       error: `Invalid role. Must be one of: ${VALID_ROLES.join(", ")}`,
     });
-  } // have to choose either admin, customer, or guest?
+  }
 
   try {
-    const result = await db.query(
-      `INSERT INTO users (name, email, password, role, mailing_address, billing_info, previous_orders)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
-       RETURNING id, name, email, role, mailing_address, billing_info, previous_orders`,
-      [
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS); // hash the password
+
+    const user = await prisma.user.create({
+      data: {
         name,
         email,
-        hashedPassword, // for authentication?
+        password: hashedPassword,
         role,
-        mailing_address,
-        billing_info,
-        JSON.stringify(previous_orders), // it should only show previous orders if they are logged in
-      ]
-    );
+        mailingAddress,
+        billingInfo,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        mailingAddress: true,
+        billingInfo: true,
+      },
+    });
 
-    res.status(201).json({ message: "User created", user: result.rows[0] });
+    res.status(201).json({ message: "User created", user });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to create user" });
@@ -109,15 +117,15 @@ router.delete("/:id", authenticateToken, async (req, res) => {
   }
 
   try {
-    const result = await db.query(
-      "DELETE FROM users WHERE id = $1 RETURNING id",
-      [userId]
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "User not found" });
-    }
+    const deleted = await prisma.user.delete({
+      where: { id: userId },
+    });
+
     res.json({ message: `User ${userId} deleted` });
   } catch (err) {
+    if (err.code === "P2025") {
+      return res.status(404).json({ error: "User not found" });
+    }
     console.error(err);
     res.status(500).json({ error: "Failed to delete user" });
   }
