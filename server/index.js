@@ -3,9 +3,9 @@ const express = require('express');
 const app = express();
 const PORT = 3001;
 
-const usersRouter = require('../routes/users');
-const productsRouter = require('../routes/products');
-const ordersRouter = require('../routes/orders');
+const usersRouter = require('./routes/users');
+const productsRouter = require('./routes/products');
+const ordersRouter = require('./routes/orders');
 
 app.use(express.json());
 
