@@ -7,11 +7,6 @@ const authorizeRoles = require("../middleware/authorize");
 
 const prisma = new PrismaClient();
 
-router.get("/", (req, res) => {
-  res.send("Testing Products");
-});
-
-
 // GET all products here
 router.get("/", async (req, res) => {
   try {
@@ -62,6 +57,7 @@ router.post(
     }
   }
 );
+
 // PUT update product
 router.put(
   "/:id",
