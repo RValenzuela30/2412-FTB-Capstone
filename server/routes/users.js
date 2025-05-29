@@ -18,7 +18,6 @@ router.get("/", (req, res) => {
   res.send("Testing Users");
 });
 
-
 // GET all users here
 router.get("/", authorizeRoles("admin"), async (req, res) => {
   try {
@@ -44,13 +43,15 @@ router.get("/", authorizeRoles("admin"), async (req, res) => {
 router.get("/:id", async (req, res) => {
   //Parses the ID from the URL
   // Authenticates the request
+  const userId = parseInt(req.params.id);
+
   try {
     const user = await prisma.user.findUnique({
       //Uses Prisma’s findUnique to get one user
       where: { id: userId },
       include: {
         orders:
-          req.user.id === userId || req.user.role === "admin" ? true : false,
+          req.user?.id === userId || req.user?.role === "admin" ? true : false,
       }, //Only includes orders if: The logged-in user is the same as the one being requested, or they are an admin
     });
 
@@ -73,7 +74,7 @@ router.post("/", async (req, res) => {
     name,
     email,
     password,
-    role = "customer", // makes sure its a valid role
+    role = "customer", // makes sure it's a valid role
     mailingAddress,
     billingInfo,
   } = req.body;
@@ -109,6 +110,12 @@ router.post("/", async (req, res) => {
     res.status(201).json({ message: "User created", user });
   } catch (err) {
     console.error(err);
+
+    // Custom error for duplicate email
+    if (err.code === "P2002" && err.meta?.target?.includes("email")) {
+      return res.status(409).json({ error: "That email is already in use." });
+    }
+
     res.status(500).json({ error: "Failed to create user" });
   }
 });

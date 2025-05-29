@@ -16,14 +16,14 @@ datasource db {
 }
 
 model User {
-  id             Int      @id @default(autoincrement())
+  id             Int     @id @default(autoincrement())
   name           String
-  email          String   @unique
+  email          String  @unique
   password       String
-  role           String   // e.g., 'customer', 'admin'
-  mailingAddress String
-  billingInfo    String
-  orders         Order[]
+  role           String  @default("customer")
+  mailingAddress String? // Make optional
+  billingInfo    String? // Make optional
+  orders         Order[] // assuming you have this relation
 }
 
 model Product {
