@@ -1,25 +1,31 @@
-import React, { useEffect, useState } from "react";
-import ProductCard from "../components/ProductCard";
+import React from "react";
+import petsImage from "../assets/petlogo.png";
 
 function Home() {
-  const [products, setProducts] = useState([]);
-
-  useEffect(() => {
-    fetch("http://localhost:3001/api/products")
-      .then((res) => res.json())
-      .then((data) => setProducts(data))
-      .catch((err) => console.error("Failed to load products:", err));
-  }, []);
-
   return (
-    <div className="container mt-4">
-      <h2 className="mb-4">Welcome to the Pet Store</h2>
-      <div className="row">
-        {products.map((product) => (
-          <div key={product.id} className="col-md-4 mb-4">
-            <ProductCard product={product} />
-          </div>
-        ))}
+    <div className="container mt-5">
+      <div className="row align-items-center">
+        <div className="col-md-6 mb-4 mb-md-0">
+          <img
+            src={petsImage}
+            alt="Happy pets"
+            className="img-fluid rounded shadow"
+          />
+        </div>
+        <div className="col-md-6">
+          <h2 className="mb-3">Welcome to the Pet Store</h2>
+          <p className="lead">
+            At Pet Store, we’re passionate about your furry friends. We offer a
+            wide selection of pet supplies, from toys to beds, to keep your
+            companions happy and healthy.
+          </p>
+          <p className="mb-1">
+            📞 <strong>Phone:</strong> (123) 456-7891
+          </p>
+          <p>
+            📧 <strong>Email:</strong> contact@petstore.com
+          </p>
+        </div>
       </div>
     </div>
   );
