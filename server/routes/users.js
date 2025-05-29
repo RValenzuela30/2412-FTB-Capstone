@@ -7,6 +7,7 @@ const prisma = new PrismaClient();
 
 // maybe we need bcrypt and JWT?
 const bcrypt = require("bcrypt");
+const SALT_ROUNDS = 10;
 // if we're doing roles we should define them
 const authenticateToken = require("../middleware/auth");
 const authorizeRoles = require("../middleware/authorize");
