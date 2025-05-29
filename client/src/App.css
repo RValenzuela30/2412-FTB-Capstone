@@ -3,7 +3,7 @@
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 70vmin;
   pointer-events: none;
 }
 
@@ -36,3 +36,23 @@
     transform: rotate(360deg);
   }
 }
+/* Logo and brand styling */
+.navbar-brand img {
+  width: 100px;
+  height: auto;
+}
+
+.navbar-brand span {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+/* Custom navbar background */
+.custom-navbar {
+  background-color: #ffe0b2; /* soft orange */
+}
+.nav-link {
+  font-size: 1.7rem;
+  font-weight: 500;
+}
+
