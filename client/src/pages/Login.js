@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 
 function Login() {
   const [isLogin, setIsLogin] = useState(true);
@@ -9,9 +11,11 @@ function Login() {
     mailingAddress: "",
     billingInfo: "",
   });
-
   const [sameAsMailing, setSameAsMailing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
@@ -55,7 +59,6 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const url = isLogin ? "/api/auth/login" : "/api/users";
     const payload = isLogin
       ? {
@@ -80,10 +83,12 @@ function Login() {
       const result = await response.json();
 
       if (response.ok) {
-        alert(isLogin ? "Login successful!" : "Account created!");
-        console.log(result);
+        if (isLogin) {
+          login(result.user, result.token);
+        }
         setErrorMessage("");
-      } else if (response.status === 409) {
+        navigate("/");
+      } else if (result.error === "Email already in use") {
         setErrorMessage("That email is already in use.");
       } else {
         setErrorMessage(result.error || "Something went wrong.");
@@ -97,30 +102,21 @@ function Login() {
   return (
     <div className="container mt-5">
       <h2>{isLogin ? "Login" : "Create Account"}</h2>
-
-      {errorMessage && (
-        <div className="alert alert-danger" role="alert">
-          {errorMessage}
-        </div>
-      )}
-
+      {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
       <form onSubmit={handleSubmit}>
         {!isLogin && (
-          <>
-            <div className="mb-3">
-              <label className="form-label">Name</label>
-              <input
-                name="name"
-                type="text"
-                className="form-control"
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
-            </div>
-          </>
+          <div className="mb-3">
+            <label className="form-label">Name</label>
+            <input
+              name="name"
+              type="text"
+              className="form-control"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
         )}
-
         <div className="mb-3">
           <label className="form-label">Email</label>
           <input
@@ -132,7 +128,6 @@ function Login() {
             required
           />
         </div>
-
         <div className="mb-3">
           <label className="form-label">Password</label>
           <input
@@ -144,7 +139,6 @@ function Login() {
             required
           />
         </div>
-
         {!isLogin && (
           <>
             <div className="mb-3">
@@ -157,7 +151,6 @@ function Login() {
                 onChange={handleChange}
               />
             </div>
-
             <div className="form-check mb-2">
               <input
                 className="form-check-input"
@@ -170,7 +163,6 @@ function Login() {
                 Billing info same as mailing address
               </label>
             </div>
-
             <div className="mb-3">
               <label className="form-label">Billing Address (Optional)</label>
               <input
@@ -184,12 +176,10 @@ function Login() {
             </div>
           </>
         )}
-
         <button className="btn btn-primary" type="submit">
           {isLogin ? "Login" : "Sign Up"}
         </button>
       </form>
-
       <button className="btn btn-link mt-2" onClick={toggleForm}>
         {isLogin ? "Don't have an account? Sign up" : "Already have an account? Log in"}
       </button>

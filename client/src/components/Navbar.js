@@ -1,34 +1,52 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import logo from "../assets/petlogo2.png"; // <-- Adjust this path to your logo
+import logo from "../assets/petlogo2.png";
+import { useAuth } from "../AuthContext";
 
 function Navbar() {
+  const { user, logout } = useAuth();
+
   return (
-    <nav className="navbar custom-navbar px-4">
+    <nav className="navbar navbar-expand-lg navbar-light bg-light px-4">
       <div className="container-fluid">
+        {/* Logo and Brand */}
         <Link className="navbar-brand d-flex align-items-center" to="/">
           <img
             src={logo}
             alt="Logo"
-            className="d-inline-block align-text-top me-2"
+            style={{ height: "40px", marginRight: "10px" }}
           />
           <span>Pet Store</span>
         </Link>
 
-        <div className="d-flex gap-3">
+        {/* Nav links and auth info */}
+        <div className="d-flex align-items-center ms-auto gap-3">
           <Link className="nav-link" to="/products">
             Products
           </Link>
-          <Link className="nav-link" to="/orders">
-            My Orders
-          </Link>
-          <Link className="nav-link" to="/login">
-            Login
-          </Link>
+
+          {user?.role === "customer" && (
+            <Link className="nav-link" to="/orders">
+              My Orders
+            </Link>
+          )}
+
+          {user ? (
+            <>
+              <span className="navbar-text">Welcome, {user.name}</span>
+              <button className="btn btn-outline-secondary" onClick={logout}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link className="nav-link" to="/login">
+              Login
+            </Link>
+          )}
         </div>
       </div>
     </nav>
   );
 }
-// we don't need the homepage anymore really
+
 export default Navbar;
