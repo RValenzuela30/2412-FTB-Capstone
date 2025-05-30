@@ -16,7 +16,7 @@ function Navbar() {
             alt="Logo"
             style={{ height: "40px", marginRight: "10px" }}
           />
-          <span>Pet Store</span>
+          <span>Pup 'N Suds</span>
         </Link>
 
         {/* Nav links and auth info */}
