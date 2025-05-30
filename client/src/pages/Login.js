@@ -11,11 +11,11 @@ function Login() {
     mailingAddress: "",
     billingInfo: "",
   });
+
   const [sameAsMailing, setSameAsMailing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
-  const { login } = useAuth();
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
@@ -59,6 +59,7 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const url = isLogin ? "/api/auth/login" : "/api/users";
     const payload = isLogin
       ? {
@@ -83,12 +84,10 @@ function Login() {
       const result = await response.json();
 
       if (response.ok) {
-        if (isLogin) {
-          login(result.user, result.token);
-        }
+        login(result.user, result.token); // ✅ login after either login or signup
         setErrorMessage("");
-        navigate("/");
-      } else if (result.error === "Email already in use") {
+        navigate("/products"); // ✅ redirect after success
+      } else if (response.status === 409) {
         setErrorMessage("That email is already in use.");
       } else {
         setErrorMessage(result.error || "Something went wrong.");
@@ -102,7 +101,13 @@ function Login() {
   return (
     <div className="container mt-5">
       <h2>{isLogin ? "Login" : "Create Account"}</h2>
-      {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+
+      {errorMessage && (
+        <div className="alert alert-danger" role="alert">
+          {errorMessage}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit}>
         {!isLogin && (
           <div className="mb-3">
@@ -117,6 +122,7 @@ function Login() {
             />
           </div>
         )}
+
         <div className="mb-3">
           <label className="form-label">Email</label>
           <input
@@ -128,6 +134,7 @@ function Login() {
             required
           />
         </div>
+
         <div className="mb-3">
           <label className="form-label">Password</label>
           <input
@@ -139,6 +146,7 @@ function Login() {
             required
           />
         </div>
+
         {!isLogin && (
           <>
             <div className="mb-3">
@@ -151,6 +159,7 @@ function Login() {
                 onChange={handleChange}
               />
             </div>
+
             <div className="form-check mb-2">
               <input
                 className="form-check-input"
@@ -163,8 +172,9 @@ function Login() {
                 Billing info same as mailing address
               </label>
             </div>
+
             <div className="mb-3">
-              <label className="form-label">Billing Address (Optional)</label>
+              <label className="form-label">Billing Info (Optional)</label>
               <input
                 name="billingInfo"
                 type="text"
@@ -176,12 +186,16 @@ function Login() {
             </div>
           </>
         )}
+
         <button className="btn btn-primary" type="submit">
           {isLogin ? "Login" : "Sign Up"}
         </button>
       </form>
+
       <button className="btn btn-link mt-2" onClick={toggleForm}>
-        {isLogin ? "Don't have an account? Sign up" : "Already have an account? Log in"}
+        {isLogin
+          ? "Don't have an account? Sign up"
+          : "Already have an account? Log in"}
       </button>
     </div>
   );

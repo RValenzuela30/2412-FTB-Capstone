@@ -7,20 +7,21 @@ function Navbar() {
   const { user, logout } = useAuth();
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light px-4">
-      <div className="container-fluid">
+    <nav className="navbar custom-navbar navbar-expand-lg px-4">
+      <div className="container-fluid d-flex justify-content-between align-items-center">
         {/* Logo and Brand */}
         <Link className="navbar-brand d-flex align-items-center" to="/">
           <img
             src={logo}
             alt="Logo"
-            style={{ height: "40px", marginRight: "10px" }}
+            className="me-2"
+            style={{ height: "40px", width: "auto" }}
           />
           <span>Pet Store</span>
         </Link>
 
-        {/* Nav links and auth info */}
-        <div className="d-flex align-items-center ms-auto gap-3">
+        {/* Navigation and Auth */}
+        <div className="d-flex align-items-center gap-3">
           <Link className="nav-link" to="/products">
             Products
           </Link>
@@ -32,12 +33,15 @@ function Navbar() {
           )}
 
           {user ? (
-            <>
-              <span className="navbar-text">Welcome, {user.name}</span>
-              <button className="btn btn-outline-secondary" onClick={logout}>
+            <div className="d-flex align-items-center gap-3">
+              <span className="nav-link m-0 p-0">Welcome, {user.name}</span>
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                onClick={logout}
+              >
                 Logout
               </button>
-            </>
+            </div>
           ) : (
             <Link className="nav-link" to="/login">
               Login
