@@ -36,6 +36,7 @@
     transform: rotate(360deg);
   }
 }
+
 /* Logo and brand styling */
 .navbar-brand img {
   width: 100px;
@@ -50,9 +51,23 @@
 /* Custom navbar background */
 .custom-navbar {
   background-color: #ffe0b2; /* soft orange */
-}
-.nav-link {
-  font-size: 1.7rem;
-  font-weight: 500;
+  width: 100%;
 }
 
+/* Link styling */
+.navbar .nav-link {
+  font-size: 1.7rem;
+  font-weight: 500;
+  color: #212529;
+}
+
+.navbar .nav-link:hover {
+  text-decoration: underline;
+}
+
+/* Logout button small size */
+.navbar .btn-sm {
+  font-size: 1rem;
+  padding: 0.25rem 0.75rem;
+  line-height: 1.5;
+}
