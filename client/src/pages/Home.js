@@ -3,14 +3,14 @@ import petsImage from "../assets/petlogo2.png";
 
 function Home() {
   return (
-    <div className="container d-flex justify-content-center align-items-center min-vh-100">
+    <div className="container mt-5">
       <div className="row text-center">
-        <div className="col-12 mb-4">
+        <div className="col-12 mb-5">
           <img
             src={petsImage}
             alt="Happy pets"
             className="img-fluid rounded shadow"
-            style={{ maxWidth: "250px" }}
+            style={{ maxWidth: "500px" }}
           />
         </div>
         <div className="col-12">
