@@ -13,10 +13,12 @@ app.use(express.json());
 const usersRouter = require('./routes/users');
 const productsRouter = require('./routes/products');
 const ordersRouter = require('./routes/orders');
+const authRouter = require('./routes/auth'); 
 
 app.use('/api/users', usersRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/orders', ordersRouter);
+app.use('/api/auth', authRouter); 
 
 // Base route
 app.get('/', (req, res) => {
