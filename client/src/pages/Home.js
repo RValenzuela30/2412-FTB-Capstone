@@ -1,5 +1,5 @@
 import React from "react";
-import petsImage from "../assets/petlogo.png";
+import petsImage from "../assets/petlogo2.png";
 
 function Home() {
   return (
