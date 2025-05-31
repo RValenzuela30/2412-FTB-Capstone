@@ -1,27 +1,30 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/petlogo2.png";
 import { useAuth } from "../AuthContext";
 
 function Navbar() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
-    <nav className="navbar custom-navbar navbar-expand-lg px-4">
+    <nav className="navbar custom-navbar px-4">
       <div className="container-fluid d-flex justify-content-between align-items-center">
-        {/* Logo and Brand */}
         <Link className="navbar-brand d-flex align-items-center" to="/">
           <img
             src={logo}
             alt="Logo"
-            className="me-2"
-            style={{ height: "40px", width: "auto" }}
+            className="d-inline-block align-text-top me-2"
           />
-          <span>Pup 'N Suds</span>
+          <span>Pet Store</span>
         </Link>
 
-        {/* Navigation and Auth */}
-        <div className="d-flex align-items-center gap-3">
+        <div className="d-flex align-items-center gap-4">
           <Link className="nav-link" to="/products">
             Products
           </Link>
@@ -32,20 +35,25 @@ function Navbar() {
             </Link>
           )}
 
-          {user ? (
-            <div className="d-flex align-items-center gap-3">
-              <span className="nav-link m-0 p-0">Welcome, {user.name}</span>
-              <button
-                className="btn btn-outline-secondary btn-sm"
-                onClick={logout}
-              >
-                Logout
-              </button>
-            </div>
-          ) : (
+          {user?.role === "admin" && (
+            <Link className="nav-link" to="/admin">
+              Admin Page
+            </Link>
+          )}
+
+          {!user ? (
             <Link className="nav-link" to="/login">
               Login
             </Link>
+          ) : (
+            <>
+              <span className="fw-semibold fs-5">
+                Welcome, {user.name.split(" ")[0]}
+              </span>
+              <button className="btn btn-sm btn-outline-dark" onClick={handleLogout}>
+                Logout
+              </button>
+            </>
           )}
         </div>
       </div>

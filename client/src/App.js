@@ -1,28 +1,45 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import "./App.css";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
+import ProductDetail from "./pages/ProductDetail"; 
 import Orders from "./pages/Orders";
 import Login from "./pages/Login";
-import ProductDetail from "./pages/ProductDetail";
+import AdminPage from "./pages/AdminPage";
 import Navbar from "./components/Navbar";
-import { AuthProvider } from "./AuthContext";
+import { useAuth } from "./AuthContext"; 
 
 function App() {
+  const { user, logout } = useAuth(); 
+
+  const handleLogout = () => {
+    logout(); 
+  };
+
   return (
-    <AuthProvider>
-      <Router>
-        <Navbar />
+    <Router>
+      <Navbar user={user} onLogout={handleLogout} />
+      <div className="container mt-4">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
-          <Route path="/orders" element={<Orders />} />
+          <Route path="/products/:id" element={<ProductDetail />} /> 
+          <Route
+            path="/orders"
+            element={
+              user && user.role === "customer" ? <Orders /> : <Navigate to="/login" />
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              user && user.role === "admin" ? <AdminPage /> : <Navigate to="/login" />
+            }
+          />
           <Route path="/login" element={<Login />} />
-          <Route path="/products/:id" element={<ProductDetail />} />
         </Routes>
-      </Router>
-    </AuthProvider>
+      </div>
+    </Router>
   );
 }
 
