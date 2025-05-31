@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
 // GET all products here
 router.get("/", async (req, res) => {
   try {
-    const products = await prisma.product.findMany(); //basically all copied from the orders.js and users.js
+    const products = await prisma.product.findMany(); // basically all copied from the orders.js and users.js
     res.json(products);
   } catch (err) {
     console.error(err);
