@@ -11,11 +11,11 @@ function Login() {
     mailingAddress: "",
     billingInfo: "",
   });
-
   const [sameAsMailing, setSameAsMailing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const navigate = useNavigate();
+
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
@@ -84,9 +84,15 @@ function Login() {
       const result = await response.json();
 
       if (response.ok) {
-        login(result.user, result.token); // ✅ login after either login or signup
+        login(result.user, result.token);
         setErrorMessage("");
-        navigate("/products"); // ✅ redirect after success
+
+        // Redirect based on role
+        if (result.user.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/products");
+        }
       } else if (response.status === 409) {
         setErrorMessage("That email is already in use.");
       } else {
@@ -174,7 +180,7 @@ function Login() {
             </div>
 
             <div className="mb-3">
-              <label className="form-label">Billing Info (Optional)</label>
+              <label className="form-label">Billing Address (Optional)</label>
               <input
                 name="billingInfo"
                 type="text"

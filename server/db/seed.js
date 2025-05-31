@@ -1,5 +1,8 @@
 const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcrypt');
+
 const prisma = new PrismaClient();
+const SALT_ROUNDS = 10;
 
 async function main() {
   console.log("Seeding database...");
@@ -10,33 +13,16 @@ async function main() {
   await prisma.product.deleteMany();
   await prisma.user.deleteMany();
 
-  // Seed users 
+  // Hash password
+  const hashedPassword = await bcrypt.hash("1111", SALT_ROUNDS);
+
+  // Seed users
   await prisma.user.createMany({
     data: [
-      {
-        name: 'Alice Admin',
-        email: 'alice@admin.com',
-        password: '1111',
-        role: 'admin',
-      },
-      {
-        name: 'Bob Admin',
-        email: 'bob@admin.com',
-        password: '1111',
-        role: 'admin',
-      },
-      {
-        name: 'Cathy Customer',
-        email: 'cathy@customer.com',
-        password: '1111',
-        role: 'customer',
-      },
-      {
-        name: 'Dan Customer',
-        email: 'dan@customer.com',
-        password: '1111',
-        role: 'customer',
-      },
+      { name: 'Alice Admin', email: 'alice@admin.com', password: hashedPassword, role: 'admin' },
+      { name: 'Bob Admin', email: 'bob@admin.com', password: hashedPassword, role: 'admin' },
+      { name: 'Cathy Customer', email: 'cathy@customer.com', password: hashedPassword, role: 'customer' },
+      { name: 'Dan Customer', email: 'dan@customer.com', password: hashedPassword, role: 'customer' },
     ],
   });
 
@@ -45,51 +31,15 @@ async function main() {
   // Seed products
   await prisma.product.createMany({
     data: [
-      {
-        name: 'Chew Toy',
-        price: 9.99,
-        imageUrl: 'https://via.placeholder.com/150?text=Chew+Toy',
-      },
-      {
-        name: 'Cat Scratching Post',
-        price: 24.99,
-        imageUrl: 'https://via.placeholder.com/150?text=Scratching+Post',
-      },
-      {
-        name: 'Dog Bed',
-        price: 39.99,
-        imageUrl: 'https://via.placeholder.com/150?text=Dog+Bed',
-      },
-      {
-        name: 'Bird Feeder',
-        price: 14.99,
-        imageUrl: 'https://via.placeholder.com/150?text=Bird+Feeder',
-      },
-      {
-        name: 'Fish Tank',
-        price: 59.99,
-        imageUrl: 'https://via.placeholder.com/150?text=Fish+Tank',
-      },
-      {
-        name: 'Rabbit Hutch',
-        price: 89.99,
-        imageUrl: 'https://via.placeholder.com/150?text=Rabbit+Hutch',
-      },
-      {
-        name: 'Reptile Heat Lamp',
-        price: 19.99,
-        imageUrl: 'https://via.placeholder.com/150?text=Heat+Lamp',
-      },
-      {
-        name: 'Pet Shampoo',
-        price: 7.99,
-        imageUrl: 'https://via.placeholder.com/150?text=Pet+Shampoo',
-      },
-      {
-        name: 'Hamster Wheel',
-        price: 12.49,
-        imageUrl: 'https://via.placeholder.com/150?text=Hamster+Wheel',
-      },
+      { name: 'Chew Toy', price: 9.99, imageUrl: 'https://via.placeholder.com/150?text=Chew+Toy' },
+      { name: 'Cat Scratching Post', price: 24.99, imageUrl: 'https://via.placeholder.com/150?text=Scratching+Post' },
+      { name: 'Dog Bed', price: 39.99, imageUrl: 'https://via.placeholder.com/150?text=Dog+Bed' },
+      { name: 'Bird Feeder', price: 14.99, imageUrl: 'https://via.placeholder.com/150?text=Bird+Feeder' },
+      { name: 'Hamster Wheel', price: 19.99, imageUrl: 'https://via.placeholder.com/150?text=Hamster+Wheel' },
+      { name: 'Fish Tank', price: 59.99, imageUrl: 'https://via.placeholder.com/150?text=Fish+Tank' },
+      { name: 'Rabbit Hutch', price: 89.99, imageUrl: 'https://via.placeholder.com/150?text=Rabbit+Hutch' },
+      { name: 'Pet Carrier', price: 29.99, imageUrl: 'https://via.placeholder.com/150?text=Pet+Carrier' },
+      { name: 'Dog Leash', price: 12.99, imageUrl: 'https://via.placeholder.com/150?text=Dog+Leash' },
     ],
   });
 

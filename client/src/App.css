@@ -37,21 +37,29 @@
   }
 }
 
+/* Navbar styles */
+.custom-navbar {
+  background-color: #ffe0b2; /* soft orange */
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+}
+
 /* Logo and brand styling */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .navbar-brand img {
-  width: 100px;
+  width: 50px;
   height: auto;
+  object-fit: contain;
 }
 
 .navbar-brand span {
   font-size: 2rem;
   font-weight: 600;
-}
-
-/* Custom navbar background */
-.custom-navbar {
-  background-color: #ffe0b2; /* soft orange */
-  width: 100%;
 }
 
 /* Link styling */
@@ -65,7 +73,7 @@
   text-decoration: underline;
 }
 
-/* Logout button small size */
+/* Logout button styling */
 .navbar .btn-sm {
   font-size: 1rem;
   padding: 0.25rem 0.75rem;
