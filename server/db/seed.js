@@ -10,7 +10,7 @@ async function main() {
   await prisma.product.deleteMany();
   await prisma.user.deleteMany();
 
-  // Seed users (plain-text passwords — NOT recommended in production)
+  // Seed users 
   await prisma.user.createMany({
     data: [
       {
@@ -64,6 +64,31 @@ async function main() {
         name: 'Bird Feeder',
         price: 14.99,
         imageUrl: 'https://via.placeholder.com/150?text=Bird+Feeder',
+      },
+      {
+        name: 'Fish Tank',
+        price: 59.99,
+        imageUrl: 'https://via.placeholder.com/150?text=Fish+Tank',
+      },
+      {
+        name: 'Rabbit Hutch',
+        price: 89.99,
+        imageUrl: 'https://via.placeholder.com/150?text=Rabbit+Hutch',
+      },
+      {
+        name: 'Reptile Heat Lamp',
+        price: 19.99,
+        imageUrl: 'https://via.placeholder.com/150?text=Heat+Lamp',
+      },
+      {
+        name: 'Pet Shampoo',
+        price: 7.99,
+        imageUrl: 'https://via.placeholder.com/150?text=Pet+Shampoo',
+      },
+      {
+        name: 'Hamster Wheel',
+        price: 12.49,
+        imageUrl: 'https://via.placeholder.com/150?text=Hamster+Wheel',
       },
     ],
   });
