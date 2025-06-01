@@ -5,7 +5,9 @@ import { AuthContext } from "../AuthContext";
 function AdminPage() {
   const { user, token } = useContext(AuthContext);
   const navigate = useNavigate();
+
   const [products, setProducts] = useState([]);
+  const [editedProducts, setEditedProducts] = useState({});
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
@@ -30,23 +32,49 @@ function AdminPage() {
     }
   };
 
-  const handleUpdate = async (id, field, value) => {
-    const updated = products.map((p) =>
-      p.id === id ? { ...p, [field]: value } : p
-    );
-    setProducts(updated);
+  // ✅ Updated: parseFloat if editing "price"
+  const handleUpdate = (id, field, value) => {
+    const updatedValue = field === "price" ? parseFloat(value) : value;
+
+    setEditedProducts((prev) => ({
+      ...prev,
+      [id]: {
+        ...products.find((p) => p.id === id),
+        ...prev[id],
+        [field]: updatedValue,
+      },
+    }));
+  };
+
+  const handleSave = async (id) => {
+    if (!editedProducts[id]) return;
+
+    const updatedProduct = { ...editedProducts[id] };
 
     try {
-      await fetch(`http://localhost:3001/api/products/${id}`, {
+      const res = await fetch(`http://localhost:3001/api/products/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(updated.find((p) => p.id === id)),
+        body: JSON.stringify(updatedProduct),
       });
+
+      if (res.ok) {
+        const updated = await res.json();
+        setProducts((prev) =>
+          prev.map((p) => (p.id === id ? updated : p))
+        );
+        setEditedProducts((prev) => {
+          const { [id]: _, ...rest } = prev;
+          return rest;
+        });
+      } else {
+        console.error("Failed to save changes");
+      }
     } catch (err) {
-      console.error("Error updating product:", err);
+      console.error("Error saving product:", err);
     }
   };
 
@@ -67,9 +95,13 @@ function AdminPage() {
         }),
       });
 
-      const created = await res.json();
-      setProducts([...products, created]);
-      setNewProduct({ name: "", price: "", imageUrl: "" });
+      if (res.ok) {
+        const created = await res.json();
+        setProducts([...products, created]);
+        setNewProduct({ name: "", price: "", imageUrl: "" });
+      } else {
+        console.error("Failed to add product");
+      }
     } catch (err) {
       console.error("Error adding product:", err);
     }
@@ -77,14 +109,22 @@ function AdminPage() {
 
   const handleDelete = async (id) => {
     try {
-      await fetch(`http://localhost:3001/api/products/${id}`, {
+      const res = await fetch(`http://localhost:3001/api/products/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      setProducts(products.filter((p) => p.id !== id));
+      if (res.ok) {
+        setProducts(products.filter((p) => p.id !== id));
+        setEditedProducts((prev) => {
+          const { [id]: _, ...rest } = prev;
+          return rest;
+        });
+      } else {
+        console.error("Failed to delete product");
+      }
     } catch (err) {
       console.error("Error deleting product:", err);
     }
@@ -144,7 +184,7 @@ function AdminPage() {
           <div key={product.id} className="col-md-6 col-lg-4">
             <div className="card h-100 shadow-sm">
               <img
-                src={product.imageUrl}
+                src={editedProducts[product.id]?.imageUrl || product.imageUrl}
                 alt={product.name}
                 className="card-img-top"
                 style={{ objectFit: "cover", height: "200px" }}
@@ -152,35 +192,36 @@ function AdminPage() {
               <div className="card-body">
                 <input
                   className="form-control mb-2"
-                  value={product.name}
+                  value={editedProducts[product.id]?.name ?? product.name}
                   onChange={(e) =>
                     handleUpdate(product.id, "name", e.target.value)
                   }
-                  onBlur={() => handleUpdate(product.id, "name", product.name)}
                 />
                 <input
                   className="form-control mb-2"
                   type="number"
-                  value={product.price}
+                  value={editedProducts[product.id]?.price ?? product.price}
                   onChange={(e) =>
                     handleUpdate(product.id, "price", e.target.value)
-                  }
-                  onBlur={() =>
-                    handleUpdate(product.id, "price", product.price)
                   }
                 />
                 <input
                   className="form-control mb-3"
-                  value={product.imageUrl}
+                  value={editedProducts[product.id]?.imageUrl ?? product.imageUrl}
                   onChange={(e) =>
                     handleUpdate(product.id, "imageUrl", e.target.value)
                   }
-                  onBlur={() =>
-                    handleUpdate(product.id, "imageUrl", product.imageUrl)
-                  }
                 />
+                {editedProducts[product.id] && (
+                  <button
+                    className="btn btn-primary btn-sm me-2"
+                    onClick={() => handleSave(product.id)}
+                  >
+                    Save
+                  </button>
+                )}
                 <button
-                  className="btn btn-delete btn-sm"
+                  className="btn btn-danger btn-sm"
                   onClick={() => handleDelete(product.id)}
                 >
                   Delete
