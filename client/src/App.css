@@ -62,11 +62,17 @@
   font-weight: 600;
 }
 
+/* Custom navbar background */
+.custom-navbar {
+  background-color: #2f87cf; /* soft orange */
+  width: 100%;
+}
+
 /* Link styling */
 .navbar .nav-link {
   font-size: 1.7rem;
   font-weight: 500;
-  color: #212529;
+  color: #ffffff;
 }
 
 .navbar .nav-link:hover {
