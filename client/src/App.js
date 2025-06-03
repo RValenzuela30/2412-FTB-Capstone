@@ -1,19 +1,27 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+
 import Home from "./pages/Home";
 import Products from "./pages/Products";
-import ProductDetail from "./pages/ProductDetail"; 
+import ProductDetail from "./pages/ProductDetail";
 import Orders from "./pages/Orders";
 import Login from "./pages/Login";
 import AdminPage from "./pages/AdminPage";
 import Navbar from "./components/Navbar";
-import { useAuth } from "./AuthContext"; 
 
-function App() {
-  const { user, logout } = useAuth(); 
+import { useAuth } from "./AuthContext";
+import { CartProvider } from "./CartContext";
+
+function AppContent() {
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    logout(); 
+    logout();
   };
 
   return (
@@ -23,23 +31,39 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
-          <Route path="/products/:id" element={<ProductDetail />} /> 
+          <Route path="/products/:id" element={<ProductDetail />} />
           <Route
             path="/orders"
             element={
-              user && user.role === "customer" ? <Orders /> : <Navigate to="/login" />
+              user && user.role === "customer" ? (
+                <Orders />
+              ) : (
+                <Navigate to="/login" />
+              )
             }
           />
           <Route
             path="/admin"
             element={
-              user && user.role === "admin" ? <AdminPage /> : <Navigate to="/login" />
+              user && user.role === "admin" ? (
+                <AdminPage />
+              ) : (
+                <Navigate to="/login" />
+              )
             }
           />
           <Route path="/login" element={<Login />} />
         </Routes>
       </div>
     </Router>
+  );
+}
+
+function App() {
+  return (
+    <CartProvider>
+      <AppContent />
+    </CartProvider>
   );
 }
 
