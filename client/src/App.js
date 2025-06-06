@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import AdminPage from "./pages/AdminPage";
 import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 import { useAuth } from "./AuthContext";
 import { CartProvider } from "./CartContext";
@@ -65,6 +66,7 @@ function AppContent() {
           />
           <Route path="/login" element={<Login />} />
         </Routes>
+        <Footer />
       </div>
     </Router>
   );
