@@ -32,7 +32,7 @@ function Navbar() {
           {user?.role === "customer" && (
             <>
               <Link className="nav-link " to="/orders">
-                My Orders
+                My Cart
               </Link>
               <Link className="nav-link fw-semibold" to="/profile">
                 Welcome, {user.name.split(" ")[0]}
@@ -51,7 +51,10 @@ function Navbar() {
               Login
             </Link>
           ) : (
-            <button className="btn btn-sm btn-outline-dark" onClick={handleLogout}>
+            <button
+              className="btn btn-sm btn-outline-dark"
+              onClick={handleLogout}
+            >
               Logout
             </button>
           )}
