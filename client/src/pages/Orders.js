@@ -1,14 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useCart } from "../CartContext";
 import CartItem from "../components/CartItem";
 
 function Orders() {
   const { cart } = useCart();
-  const navigate = useNavigate();
-
-  const handleCheckout = () => {
-    navigate("/checkout");
-  };
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <div className="container mt-4">
@@ -20,16 +16,19 @@ function Orders() {
           {cart.map((item) => (
             <CartItem key={item.id} item={item} />
           ))}
+          {/*Cart total*/}
+          <div className="text-end mt-4">
+            <h5>Total: ${total.toFixed(2)}</h5>
+          </div>
 
           <div className="text-end mt-4">
-            <button className="btn btn-success" onClick={handleCheckout}>
+            <Link to="/checkout" className="btn btn-success">
               Proceed to Checkout
-            </button>
+            </Link>
           </div>
         </>
       )}
     </div>
   );
 }
-
 export default Orders;
