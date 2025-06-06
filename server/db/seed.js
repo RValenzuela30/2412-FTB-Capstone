@@ -31,15 +31,15 @@ async function main() {
   // Seed products
   await prisma.product.createMany({
     data: [
-      { name: 'Chew Toy', price: 9.99, imageUrl: 'https://via.placeholder.com/150?text=Chew+Toy' },
-      { name: 'Cat Scratching Post', price: 24.99, imageUrl: 'https://via.placeholder.com/150?text=Scratching+Post' },
-      { name: 'Dog Bed', price: 39.99, imageUrl: 'https://via.placeholder.com/150?text=Dog+Bed' },
-      { name: 'Bird Feeder', price: 14.99, imageUrl: 'https://via.placeholder.com/150?text=Bird+Feeder' },
-      { name: 'Hamster Wheel', price: 19.99, imageUrl: 'https://via.placeholder.com/150?text=Hamster+Wheel' },
-      { name: 'Fish Tank', price: 59.99, imageUrl: 'https://via.placeholder.com/150?text=Fish+Tank' },
-      { name: 'Rabbit Hutch', price: 89.99, imageUrl: 'https://via.placeholder.com/150?text=Rabbit+Hutch' },
-      { name: 'Pet Carrier', price: 29.99, imageUrl: 'https://via.placeholder.com/150?text=Pet+Carrier' },
-      { name: 'Dog Leash', price: 12.99, imageUrl: 'https://via.placeholder.com/150?text=Dog+Leash' },
+      { name: 'Chew Toy', price: 9.99, imageUrl: 'https://i.ebayimg.com/images/g/Y1kAAOSwQXVmSWvq/s-l1200.png' },
+      { name: 'Cat Scratching Post', price: 24.99, imageUrl: 'https://shop.hauspanther.com/cdn/shop/products/RoundPost2_2048x2048.jpg?v=1606144747' },
+      { name: 'Dog Bed', price: 39.99, imageUrl: 'https://snoozerpetproducts.com/wp-content/uploads/2022/03/overstuffed-dog-sofa-lifestyle-sapphire-1-4.jpg' },
+      { name: 'Bird Feeder', price: 14.99, imageUrl: 'https://images.thdstatic.com/productImages/f0e8de80-0243-4cac-9f04-151c219db801/svn/copper-perky-pet-bird-feeders-312c-c3_600.jpg' },
+      { name: 'Hamster Wheel', price: 19.99, imageUrl: 'https://m.media-amazon.com/images/I/513WxFGTvYL._AC_UF1000,1000_QL80_.jpg' },
+      { name: 'Fish Tank', price: 59.99, imageUrl: 'https://i5.walmartimages.com/seo/Aqua-Culture-10-Gallon-Glass-Aquarium-Starter-Kit_e6976bf3-a974-425a-b72f-061889abea0c.a6d5ccb879cd72e05e521edb53000114.jpeg' },
+      { name: 'Rabbit Hutch', price: 89.99, imageUrl: 'https://s7d2.scene7.com/is/image/PetSmart/5181405?fmt=webp&wid=400&hei=400' },
+      { name: 'Pet Carrier', price: 29.99, imageUrl: 'https://www.lillyandmax.com/wp-content/uploads/2021/04/ElitePet-Front-Dog-Carrier-Black.jpg' },
+      { name: 'Dog Leash', price: 12.99, imageUrl: 'https://headsupfortails.com/cdn/shop/files/DSC_9356-Edit.jpg?v=1739043822&width=1946' },
     ],
   });
 

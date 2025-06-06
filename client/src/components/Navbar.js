@@ -30,9 +30,14 @@ function Navbar() {
           </Link>
 
           {user?.role === "customer" && (
-            <Link className="nav-link" to="/orders">
-              My Orders
-            </Link>
+            <>
+              <Link className="nav-link " to="/orders">
+                My Orders
+              </Link>
+              <Link className="nav-link fw-semibold" to="/profile">
+                Welcome, {user.name.split(" ")[0]}
+              </Link>
+            </>
           )}
 
           {user?.role === "admin" && (
@@ -46,14 +51,9 @@ function Navbar() {
               Login
             </Link>
           ) : (
-            <>
-              <span className="fw-semibold fs-5">
-                Welcome, {user.name.split(" ")[0]}
-              </span>
-              <button className="btn btn-sm btn-outline-dark" onClick={handleLogout}>
-                Logout
-              </button>
-            </>
+            <button className="btn btn-sm btn-outline-dark" onClick={handleLogout}>
+              Logout
+            </button>
           )}
         </div>
       </div>
