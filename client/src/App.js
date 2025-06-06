@@ -13,6 +13,7 @@ import Orders from "./pages/Orders";
 import Login from "./pages/Login";
 import AdminPage from "./pages/AdminPage";
 import Profile from "./pages/Profile";
+import Checkout from "./pages/Checkout";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
@@ -59,6 +60,16 @@ function AppContent() {
             element={
               user && user.role === "customer" ? (
                 <Profile />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/checkout"
+            element={
+              user && user.role === "customer" ? (
+                <Checkout />
               ) : (
                 <Navigate to="/login" />
               )
