@@ -10,11 +10,24 @@ const prisma = new PrismaClient();
 // I think instead it should be like get order by ID only and only the customer and the admin can have access to that
 
 // --> GET ALL orders
+router.get(
+  "/",
+  authenticateToken,
+  authorizeRoles("customer", "admin"),
+  async (req, res) => {
+    try {
+      const orders = await prisma.order.findMany(); // copied from the products.js
+      res.json(orders);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to fetch orders" });
+    }
+  }
+);
 
 router.get("/", (req, res) => {
   res.send("Testing Orders");
 });
-
 
 // GET orders for logged-in user
 router.get(
