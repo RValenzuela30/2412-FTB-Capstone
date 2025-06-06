@@ -1,9 +1,14 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../CartContext";
 import CartItem from "../components/CartItem";
 
 function Orders() {
   const { cart } = useCart();
+  const navigate = useNavigate();
+
+  const handleCheckout = () => {
+    navigate("/checkout");
+  };
 
   return (
     <div className="container mt-4">
@@ -17,13 +22,14 @@ function Orders() {
           ))}
 
           <div className="text-end mt-4">
-            <Link to="/checkout" className="btn btn-success">
+            <button className="btn btn-success" onClick={handleCheckout}>
               Proceed to Checkout
-            </Link>
+            </button>
           </div>
         </>
       )}
     </div>
   );
 }
+
 export default Orders;
