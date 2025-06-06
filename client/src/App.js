@@ -12,6 +12,7 @@ import ProductDetail from "./pages/ProductDetail";
 import Orders from "./pages/Orders";
 import Login from "./pages/Login";
 import AdminPage from "./pages/AdminPage";
+import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar";
 
 import { useAuth } from "./AuthContext";
@@ -47,6 +48,16 @@ function AppContent() {
             element={
               user && user.role === "admin" ? (
                 <AdminPage />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              user && user.role === "customer" ? (
+                <Profile />
               ) : (
                 <Navigate to="/login" />
               )

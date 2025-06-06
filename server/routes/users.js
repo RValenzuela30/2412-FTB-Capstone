@@ -40,8 +40,7 @@ router.get("/:id", authenticateToken, async (req, res) => {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
-        orders:
-          req.user?.id === userId || req.user?.role === "admin" ? true : false,
+        orders: req.user?.id === userId || req.user?.role === "admin" ? true : false,
       },
     });
 
@@ -57,7 +56,7 @@ router.get("/:id", authenticateToken, async (req, res) => {
   }
 });
 
-// POST create new user (admin only) — requires password
+// POST create new user (admin only)
 router.post("/", authenticateToken, authorizeRoles("admin"), async (req, res) => {
   const {
     name,
@@ -112,24 +111,46 @@ router.post("/", authenticateToken, authorizeRoles("admin"), async (req, res) =>
   }
 });
 
-// PUT update user (admin only)
-router.put("/:id", authenticateToken, authorizeRoles("admin"), async (req, res) => {
+// PUT update user (admin or self)
+router.put("/:id", authenticateToken, async (req, res) => {
   const userId = parseInt(req.params.id);
-  const { name, email, role } = req.body;
+  const { name, email, password, mailingAddress, billingInfo, role } = req.body;
 
-  if (role && !VALID_ROLES.includes(role)) {
-    return res.status(400).json({ error: `Invalid role.` });
+  if (role && req.user.role !== "admin") {
+    return res.status(403).json({ error: "Only admin can change roles" });
+  }
+
+  if (req.user.id !== userId && req.user.role !== "admin") {
+    return res.status(403).json({ error: "Access denied" });
   }
 
   try {
+    const updateData = {
+      name,
+      email,
+      mailingAddress,
+      billingInfo,
+    };
+
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+      updateData.password = hashedPassword;
+    }
+
+    if (role && req.user.role === "admin") {
+      updateData.role = role;
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: { name, email, role },
+      data: updateData,
       select: {
         id: true,
         name: true,
         email: true,
         role: true,
+        mailingAddress: true,
+        billingInfo: true,
       },
     });
 
@@ -148,7 +169,7 @@ router.delete("/:id", authenticateToken, authorizeRoles("admin"), async (req, re
   const userId = parseInt(req.params.id);
 
   try {
-    const deleted = await prisma.user.delete({
+    await prisma.user.delete({
       where: { id: userId },
     });
 
