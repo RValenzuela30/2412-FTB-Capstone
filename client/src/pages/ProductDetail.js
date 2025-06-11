@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { useCart } from "../CartContext";
+import { useAuth } from "../AuthContext";
 
 function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const { addToCart } = useCart();
   const [addedMessage, setAddedMessage] = useState("");
+  const { user } = useAuth();
 
   useEffect(() => {
     fetch(`http://localhost:3001/api/products/${id}`)
@@ -30,19 +32,23 @@ function ProductDetail() {
         <div className="col-md-6">
           <h2>{product.name}</h2>
           <p className="lead">${product.price.toFixed(2)}</p>
-          <button
-            className="btn btn-primary"
-            onClick={() => {
-              console.log("Adding to cart:", product);
-              addToCart(product);
-              setAddedMessage("Item added to cart!");
-              setTimeout(() => setAddedMessage(""), 2000);
-            }}
-          >
-            Add to Cart
-          </button>
-          {addedMessage && (
-            <div className="alert alert-success mt-3">{addedMessage}</div>
+          {user && user.role === "customer" && (
+            <>
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  console.log("Adding to cart:", product);
+                  addToCart(product);
+                  setAddedMessage("Item added to cart!");
+                  setTimeout(() => setAddedMessage(""), 2000);
+                }}
+              >
+                Add to Cart
+              </button>
+              {addedMessage && (
+                <div className="alert alert-success mt-3">{addedMessage}</div>
+              )}
+            </>
           )}
         </div>
       </div>
