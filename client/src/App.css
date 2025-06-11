@@ -98,3 +98,18 @@
   background-color: #dc3545; 
 }
 
+/* footer at the bottom of the page*/ 
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+.layout-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+}

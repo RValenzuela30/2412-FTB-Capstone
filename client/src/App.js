@@ -29,54 +29,58 @@ function AppContent() {
 
   return (
     <Router>
-      <Navbar user={user} onLogout={handleLogout} />
-      <div className="container mt-4">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/products/:id" element={<ProductDetail />} />
-          <Route
-            path="/orders"
-            element={
-              user && user.role === "customer" ? (
-                <Orders />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              user && user.role === "admin" ? (
-                <AdminPage />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              user && user.role === "customer" ? (
-                <Profile />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/checkout"
-            element={
-              user && user.role === "customer" ? (
-                <Checkout />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-          <Route path="/login" element={<Login />} />
-        </Routes>
+      <div className="layout-wrapper">
+        <Navbar user={user} onLogout={handleLogout} />
+
+        <div className="container mt-4 main-content">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/products/:id" element={<ProductDetail />} />
+            <Route
+              path="/orders"
+              element={
+                user && user.role === "customer" ? (
+                  <Orders />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                user && user.role === "admin" ? (
+                  <AdminPage />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                user && user.role === "customer" ? (
+                  <Profile />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+            <Route
+              path="/checkout"
+              element={
+                user && user.role === "customer" ? (
+                  <Checkout />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </div>
+
         <Footer />
       </div>
     </Router>
