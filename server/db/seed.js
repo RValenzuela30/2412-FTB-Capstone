@@ -17,19 +17,19 @@ async function main() {
   const hashedPassword = await bcrypt.hash("1111", SALT_ROUNDS);
 
   // Seed users
-  await prisma.user.createMany({
+  const users = await prisma.user.createMany({
     data: [
       { name: 'Alice Admin', email: 'alice@admin.com', password: hashedPassword, role: 'admin' },
       { name: 'Bob Admin', email: 'bob@admin.com', password: hashedPassword, role: 'admin' },
-      { name: 'Cathy Customer', email: 'cathy@customer.com', password: hashedPassword, role: 'customer' },
-      { name: 'Dan Customer', email: 'dan@customer.com', password: hashedPassword, role: 'customer' },
+      { name: 'Cathy Customer', email: 'cathy@customer.com', password: hashedPassword, role: 'customer', mailingAddress: "123 Main St", billingInfo: "Visa 1234" },
+      { name: 'Dan Customer', email: 'dan@customer.com', password: hashedPassword, role: 'customer', mailingAddress: "456 Oak Ave", billingInfo: "Mastercard 5678" },
     ],
   });
 
   console.log("Users seeded");
 
   // Seed products
-  await prisma.product.createMany({
+  const createdProducts = await prisma.product.createMany({
     data: [
       { name: 'Chew Toy', price: 9.99, imageUrl: 'https://i.ebayimg.com/images/g/Y1kAAOSwQXVmSWvq/s-l1200.png' },
       { name: 'Cat Scratching Post', price: 24.99, imageUrl: 'https://shop.hauspanther.com/cdn/shop/products/RoundPost2_2048x2048.jpg?v=1606144747' },
@@ -43,7 +43,45 @@ async function main() {
     ],
   });
 
-  console.log("Products seeded");
+  const allProducts = await prisma.product.findMany();
+  const customers = await prisma.user.findMany({ where: { role: 'customer' } });
+
+  // Create mock orders for Cathy and Dan
+  const orders = await Promise.all([
+    prisma.order.create({
+      data: {
+        orderNumber: "ORD-1001",
+        userId: customers.find(u => u.email === 'cathy@customer.com').id,
+        orderCost: 9.99 + 24.99,
+        shippingInfo: "123 Main St",
+        billingInfo: "Visa 1234",
+        orderItems: {
+          create: [
+            { productId: allProducts[0].id, quantity: 1 }, // Chew Toy
+            { productId: allProducts[1].id, quantity: 1 }, // Scratching Post
+          ],
+        },
+      },
+    }),
+    prisma.order.create({
+      data: {
+        orderNumber: "ORD-1002",
+        userId: customers.find(u => u.email === 'dan@customer.com').id,
+        orderCost: 39.99 + 14.99 + 12.99,
+        shippingInfo: "456 Oak Ave",
+        billingInfo: "Mastercard 5678",
+        orderItems: {
+          create: [
+            { productId: allProducts[2].id, quantity: 1 }, // Dog Bed
+            { productId: allProducts[3].id, quantity: 1 }, // Bird Feeder
+            { productId: allProducts[8].id, quantity: 1 }, // Dog Leash
+          ],
+        },
+      },
+    }),
+  ]);
+
+  console.log("Orders seeded");
 }
 
 main()

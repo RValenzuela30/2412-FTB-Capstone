@@ -6,17 +6,14 @@ const authorizeRoles = require("../middleware/authorize");
 
 const prisma = new PrismaClient();
 
-// do we even need a GET all orders? I feel like that would be something only the admin can do but functionally it would mean getting ALL orders from EVERYONE so
-// I think instead it should be like get order by ID only and only the customer and the admin can have access to that
-
-// --> GET ALL orders
+// GET all orders (admin or customer)
 router.get(
   "/",
   authenticateToken,
   authorizeRoles("customer", "admin"),
   async (req, res) => {
     try {
-      const orders = await prisma.order.findMany(); // copied from the products.js
+      const orders = await prisma.order.findMany({ include: { orderItems: true } });
       res.json(orders);
     } catch (err) {
       console.error(err);
@@ -24,10 +21,6 @@ router.get(
     }
   }
 );
-
-router.get("/", (req, res) => {
-  res.send("Testing Orders");
-});
 
 // GET orders for logged-in user
 router.get(
@@ -37,7 +30,6 @@ router.get(
   async (req, res) => {
     try {
       const orders = await prisma.order.findMany({
-        // fetch all orders from the db and return as a json
         where: { userId: req.user.id },
         include: { orderItems: true },
       });
@@ -51,12 +43,10 @@ router.get(
 
 // GET order by ID (customer or admin only)
 router.get("/:id", authenticateToken, async (req, res) => {
-  //requires authentication token
   const orderId = parseInt(req.params.id);
 
   try {
     const order = await prisma.order.findUnique({
-      // Prisma method to fetch a single row by primary key
       where: { id: orderId },
       include: { orderItems: true },
     });
@@ -64,7 +54,6 @@ router.get("/:id", authenticateToken, async (req, res) => {
     if (!order) return res.status(404).json({ error: "Order not found" });
 
     if (req.user.id !== order.userId && req.user.role !== "admin") {
-      // is not admin or customer?
       return res.status(403).json({ error: "Access denied" });
     }
 
@@ -75,33 +64,32 @@ router.get("/:id", authenticateToken, async (req, res) => {
   }
 });
 
-// POST create an order when the user submits
-// CREATE order
+// POST create a new order
 router.post(
   "/",
   authenticateToken,
   authorizeRoles("customer"),
   async (req, res) => {
-    // authentication token again
-    const { orderItems, orderCost } = req.body;
+    const { items, total, shippingInfo, billingInfo } = req.body;
 
-    const orderNumber = `ORD-${Math.floor(1000 + Math.random() * 9000)}`; // looked this up it will give a random order number to any specific order.
+    const orderNumber = `ORD-${Math.floor(1000 + Math.random() * 9000)}`;
 
     try {
       const newOrder = await prisma.order.create({
         data: {
           orderNumber,
-          orderCost,
-          user: { connect: { id: req.user.id } }, //connect this to the logged-in user
+          orderCost: total,
+          shippingInfo,
+          billingInfo,
+          user: { connect: { id: req.user.id } },
           orderItems: {
-            // array of objects from client
-            create: orderItems.map((item) => ({
-              product: { connect: { id: item.productId } },
-              quantity: item.quantity,
+            create: items.map((item) => ({
+              product: { connect: { id: item.id } },
+              quantity: item.quantity || 1,
             })),
           },
         },
-        include: { orderItems: true }, // Adds child records to OrderItem table, connecting to Product
+        include: { orderItems: true },
       });
 
       res.status(201).json(newOrder);

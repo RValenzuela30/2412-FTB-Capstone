@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node index.js"
   },
+  "prisma": {
+    "seed": "node ./db/seed.js"
+  },
   "dependencies": {
     "@prisma/client": "^5.13.0",
     "bcrypt": "^5.1.1",
