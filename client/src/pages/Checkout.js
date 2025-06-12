@@ -4,8 +4,8 @@ import { useAuth } from "../AuthContext";
 import { useCart } from "../CartContext";
 
 function Checkout() {
-  const { user } = useAuth();
-  const { cart } = useCart();
+  const { user, token } = useAuth();
+  const { cart, clearCart } = useCart();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -64,9 +64,37 @@ function Checkout() {
 
   const total = cart.reduce((sum, item) => sum + item.price, 0).toFixed(2);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Order placed!");
+
+    try {
+      const res = await fetch("http://localhost:3001/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          items: cart,
+          total: parseFloat(total),
+          shippingInfo: formData.mailingAddress,
+          billingInfo: formData.billingInfo,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.error || "Failed to place order");
+        return;
+      }
+
+      clearCart();
+      alert("Order placed successfully!");
+      navigate("/orders");
+    } catch (error) {
+      console.error("Checkout error:", error);
+      alert("Server error while placing order");
+    }
   };
 
   return (

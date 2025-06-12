@@ -1,11 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-// schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -21,16 +13,16 @@ model User {
   email          String  @unique
   password       String
   role           String  @default("customer")
-  mailingAddress String? // Make optional
-  billingInfo    String? // Make optional
-  orders         Order[] // assuming you have this relation
+  mailingAddress String?
+  billingInfo    String?
+  orders         Order[]
 }
 
 model Product {
-  id        Int      @id @default(autoincrement())
-  name      String
-  price     Float
-  imageUrl  String
+  id         Int        @id @default(autoincrement())
+  name       String
+  price      Float
+  imageUrl   String
   orderItems OrderItem[]
 }
 
@@ -40,12 +32,13 @@ model Order {
   userId       Int
   orderCost    Float
   createdAt    DateTime    @default(now())
+  shippingInfo String?
+  billingInfo  String?
 
   user         User        @relation(fields: [userId], references: [id])
   orderItems   OrderItem[]
 }
 
-// Joins the tables for many to many. Will be able to correlate users and previous orders
 model OrderItem {
   id        Int      @id @default(autoincrement())
   orderId   Int
