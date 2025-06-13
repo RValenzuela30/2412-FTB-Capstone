@@ -3,7 +3,11 @@ import ProductCard from "../components/ProductCard";
 
 function Products() {
   const [products, setProducts] = useState([]);
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001/api";
+
+  const API_URL =
+    process.env.NODE_ENV === "development"
+      ? process.env.REACT_APP_API_BASE_DEV
+      : process.env.REACT_APP_API_BASE;
 
   useEffect(() => {
     fetch(`${API_URL}/products`)

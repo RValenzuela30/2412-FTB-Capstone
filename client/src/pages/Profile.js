@@ -5,7 +5,11 @@ import { useAuth } from "../AuthContext";
 function Profile() {
   const { user, token, setUser } = useAuth();
   const navigate = useNavigate();
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001/api";
+
+  const API_URL =
+    process.env.NODE_ENV === "development"
+      ? process.env.REACT_APP_API_BASE_DEV
+      : process.env.REACT_APP_API_BASE;
 
   const [formData, setFormData] = useState({
     name: "",
