@@ -5,20 +5,28 @@ const cors = require('cors');
 const app = express();
 const PORT = 3001;
 
-// Middleware
-app.use(cors());            
+// Configure CORS
+const allowedOrigins = process.env.NODE_ENV === "production"
+  ? ["https://two412-ftb-capstone-pet-store-fe.onrender.com"]
+  : ["http://localhost:3000"];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
+
 app.use(express.json());
 
 // Routers
 const usersRouter = require('./routes/users');
 const productsRouter = require('./routes/products');
 const ordersRouter = require('./routes/orders');
-const authRouter = require('./routes/auth'); 
+const authRouter = require('./routes/auth');
 
 app.use('/api/users', usersRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/orders', ordersRouter);
-app.use('/api/auth', authRouter); 
+app.use('/api/auth', authRouter);
 
 // Base route
 app.get('/', (req, res) => {

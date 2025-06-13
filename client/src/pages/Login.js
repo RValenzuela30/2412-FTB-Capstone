@@ -16,6 +16,7 @@ function Login() {
 
   const { login } = useAuth();
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001/api";
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
@@ -60,7 +61,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const url = isLogin ? "/api/auth/login" : "/api/users";
+    const url = isLogin ? "/auth/login" : "/users";
     const payload = isLogin
       ? {
           email: formData.email,
@@ -75,7 +76,7 @@ function Login() {
         };
 
     try {
-      const response = await fetch(`http://localhost:3001${url}`, {
+      const response = await fetch(`${API_URL}${url}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -87,7 +88,6 @@ function Login() {
         login(result.user, result.token);
         setErrorMessage("");
 
-        // Redirect based on role
         if (result.user.role === "admin") {
           navigate("/admin");
         } else {

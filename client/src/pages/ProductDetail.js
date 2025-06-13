@@ -10,12 +10,14 @@ function ProductDetail() {
   const [addedMessage, setAddedMessage] = useState("");
   const { user } = useAuth();
 
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001/api";
+
   useEffect(() => {
-    fetch(`http://localhost:3001/api/products/${id}`)
+    fetch(`${API_URL}/products/${id}`)
       .then((res) => res.json())
       .then((data) => setProduct(data))
       .catch((err) => console.error("Error loading product:", err));
-  }, [id]);
+  }, [id, API_URL]);
 
   if (!product) return <div className="text-center mt-5">Loading...</div>;
 

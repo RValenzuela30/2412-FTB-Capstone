@@ -5,6 +5,7 @@ import { AuthContext } from "../AuthContext";
 function AdminPage() {
   const { user, token } = useContext(AuthContext);
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001/api";
 
   const [tab, setTab] = useState("products");
 
@@ -40,7 +41,7 @@ function AdminPage() {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/products");
+      const res = await fetch(`${API_URL}/products`);
       const data = await res.json();
       setProducts(data);
     } catch (err) {
@@ -50,7 +51,7 @@ function AdminPage() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/users", {
+      const res = await fetch(`${API_URL}/users`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -81,7 +82,7 @@ function AdminPage() {
     const updatedProduct = { ...editedProducts[id] };
 
     try {
-      const res = await fetch(`http://localhost:3001/api/products/${id}`, {
+      const res = await fetch(`${API_URL}/products/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -109,7 +110,7 @@ function AdminPage() {
     if (!newProduct.name || !newProduct.price || !newProduct.imageUrl) return;
 
     try {
-      const res = await fetch("http://localhost:3001/api/products", {
+      const res = await fetch(`${API_URL}/products`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -136,7 +137,7 @@ function AdminPage() {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/products/${id}`, {
+      const res = await fetch(`${API_URL}/products/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -159,7 +160,7 @@ function AdminPage() {
 
   const handleRoleChange = async (userId, newRole) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/users/${userId}`, {
+      const res = await fetch(`${API_URL}/users/${userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -182,7 +183,7 @@ function AdminPage() {
 
   const handleUserDelete = async (userId) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/users/${userId}`, {
+      const res = await fetch(`${API_URL}/users/${userId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -204,7 +205,7 @@ function AdminPage() {
     if (!name || !email || !password || !role) return;
 
     try {
-      const res = await fetch("http://localhost:3001/api/users", {
+      const res = await fetch(`${API_URL}/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -244,157 +245,6 @@ function AdminPage() {
         </button>
       </div>
 
-      {tab === "products" && (
-        <>
-          <div className="card mb-4">
-            <div className="card-header">Add New Product</div>
-            <div className="card-body row g-3">
-              <div className="col-md-4">
-                <input
-                  className="form-control"
-                  placeholder="Name"
-                  value={newProduct.name}
-                  onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-                />
-              </div>
-              <div className="col-md-3">
-                <input
-                  type="number"
-                  className="form-control"
-                  placeholder="Price"
-                  value={newProduct.price}
-                  onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
-                />
-              </div>
-              <div className="col-md-4">
-                <input
-                  className="form-control"
-                  placeholder="Image URL"
-                  value={newProduct.imageUrl}
-                  onChange={(e) => setNewProduct({ ...newProduct, imageUrl: e.target.value })}
-                />
-              </div>
-              <div className="col-md-1">
-                <button className="btn btn-success w-100" onClick={handleAddProduct}>
-                  Add
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="row g-4">
-            {products.map((p) => (
-              <div key={p.id} className="col-md-6 col-lg-4">
-                <div className="card h-100 shadow-sm">
-                  <img src={p.imageUrl} className="card-img-top" alt={p.name} />
-                  <div className="card-body">
-                    <input
-                      className="form-control mb-2"
-                      value={editedProducts[p.id]?.name ?? p.name}
-                      onChange={(e) => handleUpdate(p.id, "name", e.target.value)}
-                    />
-                    <input
-                      className="form-control mb-2"
-                      type="number"
-                      value={editedProducts[p.id]?.price ?? p.price}
-                      onChange={(e) => handleUpdate(p.id, "price", e.target.value)}
-                    />
-                    <input
-                      className="form-control mb-2"
-                      value={editedProducts[p.id]?.imageUrl ?? p.imageUrl}
-                      onChange={(e) => handleUpdate(p.id, "imageUrl", e.target.value)}
-                    />
-                    <div className="d-flex justify-content-between">
-                      <button className="btn btn-primary" onClick={() => handleSave(p.id)}>Save</button>
-                      <button className="btn btn-danger" onClick={() => handleDelete(p.id)}>Delete</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-
-      {tab === "users" && (
-        <>
-          <div className="card mb-4">
-            <div className="card-header">Add New User</div>
-            <div className="card-body row g-3">
-              <div className="col-md-3">
-                <input
-                  className="form-control"
-                  placeholder="Name"
-                  value={newUser.name}
-                  onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-                />
-              </div>
-              <div className="col-md-3">
-                <input
-                  className="form-control"
-                  placeholder="Email"
-                  value={newUser.email}
-                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                />
-              </div>
-              <div className="col-md-3">
-                <input
-                  type="password"
-                  className="form-control"
-                  placeholder="Password"
-                  value={newUser.password}
-                  onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                />
-              </div>
-              <div className="col-md-2">
-                <select
-                  className="form-select"
-                  value={newUser.role}
-                  onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                >
-                  <option value="customer">customer</option>
-                  <option value="admin">admin</option>
-                </select>
-              </div>
-              <div className="col-md-1">
-                <button className="btn btn-success w-100" onClick={handleAddUser}>
-                  Add
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="row g-4">
-            {users.map((u) => (
-              <div key={u.id} className="col-md-6 col-lg-4">
-                <div className="card h-100 shadow-sm">
-                  <div className="card-body">
-                    <h5>{u.name}</h5>
-                    <p>Email: {u.email}</p>
-                    <p>
-                      Role:{" "}
-                      <select
-                        className="form-select"
-                        value={u.role}
-                        onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                      >
-                        <option value="customer">customer</option>
-                        <option value="admin">admin</option>
-                      </select>
-                    </p>
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() => handleUserDelete(u.id)}
-                    >
-                      Delete User
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
     </div>
   );
 }

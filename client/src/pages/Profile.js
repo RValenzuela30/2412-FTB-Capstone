@@ -5,6 +5,7 @@ import { useAuth } from "../AuthContext";
 function Profile() {
   const { user, token, setUser } = useAuth();
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001/api";
 
   const [formData, setFormData] = useState({
     name: "",
@@ -43,7 +44,7 @@ function Profile() {
     if (formData.password) updatedFields.password = formData.password;
 
     try {
-      const res = await fetch(`http://localhost:3001/api/users/${user.id}`, {
+      const res = await fetch(`${API_URL}/users/${user.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

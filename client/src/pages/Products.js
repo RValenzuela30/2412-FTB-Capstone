@@ -3,13 +3,14 @@ import ProductCard from "../components/ProductCard";
 
 function Products() {
   const [products, setProducts] = useState([]);
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001/api";
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/products")
+    fetch(`${API_URL}/products`)
       .then((res) => res.json())
       .then((data) => setProducts(data))
       .catch((err) => console.error("Failed to load products:", err));
-  }, []);
+  }, [API_URL]);
 
   return (
     <div className="container mt-4">

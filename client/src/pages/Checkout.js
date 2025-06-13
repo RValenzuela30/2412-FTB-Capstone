@@ -8,6 +8,8 @@ function Checkout() {
   const { cart, clearCart } = useCart();
   const navigate = useNavigate();
 
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001/api";
+
   const [formData, setFormData] = useState({
     name: "",
     mailingAddress: "",
@@ -68,7 +70,7 @@ function Checkout() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:3001/api/orders", {
+      const res = await fetch(`${API_URL}/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
